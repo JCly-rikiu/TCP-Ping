@@ -2,62 +2,86 @@ package ntu.csie.ping;
 
 import java.io.*;
 import java.net.*;
+import java.util.concurrent.*;
 
 public class Client {
 
-  private Socket socket;
+  private String host;
+  private int port;
+  private int timeout;
+  private int numberOfPackets;
 
-  public Client(String host, int port) {
-    try {
-      socket = new Socket(host, port);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+  public Client(String host, int port, int timeout, int numberOfPackets) {
+    this.host = host;
+    this.port = port;
+    this.timeout = timeout;
+    this.numberOfPackets = numberOfPackets;
   }
 
   public void start() {
-    (new Request(socket)).start();
+    new Thread(new Runnable() {
+      @Override
+      public void run() {
+        for (int i = numberOfPackets; i > 0 || numberOfPackets == 0; i--) {
+          ExecutorService executor = Executors.newSingleThreadExecutor();
+          Future<String> future = executor.submit(new Request(host, port));
+
+          try {
+            System.out.println(future.get(timeout, TimeUnit.MILLISECONDS));
+          } catch (TimeoutException e) {
+            future.cancel(true);
+            System.out.println("timeout");
+          } catch (Exception e) {
+            future.cancel(true);
+            System.out.println("timeout");
+          }
+          System.out.flush();
+          executor.shutdownNow();
+        }
+      }
+    }).start();
   }
 
-  private class Request extends Thread {
+  private class Request implements Callable<String> {
 
     private Socket socket;
+    private String host;
+    private int port;
     private ObjectInputStream in;
     private ObjectOutputStream out;
 
-    public Request(Socket socket) {
-      this.socket = socket;
-      try {
-        out = new ObjectOutputStream(socket.getOutputStream());
-        in = new ObjectInputStream(socket.getInputStream());
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+    public Request(String host, int port) {
+      this.host = host;
+      this.port = port;
     }
 
     @Override
-    public void run() {
-      try {
-        out.writeObject(new Packet(System.currentTimeMillis()));
-        out.flush();
+    public String call() throws Exception {
+      socket = new Socket(host, port);
+      out = new ObjectOutputStream(socket.getOutputStream());
+      in = new ObjectInputStream(socket.getInputStream());
 
-        Object obj = in.readObject();
-        if (obj instanceof Packet) {
-          Packet packet = (Packet)obj;
-          packet.show();
-        }
+      out.writeObject(new Packet(System.currentTimeMillis()));
+      out.flush();
 
-        socket.close();
-      } catch (IOException e) {
-        e.printStackTrace();
-      } catch (ClassNotFoundException e) {
-        e.printStackTrace();
+      Object obj = in.readObject();
+      String returnMessage = null;
+      if (obj instanceof Packet) {
+        Packet packet = (Packet)obj;
+        returnMessage = "recv from " + socket.getInetAddress().getHostAddress() + ", RTT = " + packet.getRTT(System.currentTimeMillis()) + " msec";
+        System.out.flush();
       }
+
+      socket.close();
+
+      return returnMessage;
     }
   }
 
   public static void main(String[] args) {
-    Client client = new Client("127.0.0.1", 5217);
+    Client client = new Client("oasis2.csie.ntu.edu.twd", 5217, 10, 1);
+    client.start();
+    client = new Client("oasis2.csie.ntu.edu.tw", 5217, 48, 100);
     client.start();
   }
 }
