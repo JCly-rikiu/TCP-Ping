@@ -2,6 +2,7 @@ package ntu.csie.ping;
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
 import java.util.concurrent.*;
 
 public class Client {
@@ -86,11 +87,38 @@ public class Client {
   }
 
   public static void main(String[] args) {
-    Client client = new Client("oasis2.csie.ntu.edu.twd", 5217, 10, 1);
-    client.start();
-    client = new Client("oasis2.csie.ntu.edu.tw", 5217, 48, 100);
-    client.start();
-    client = new Client("140.112.30.52", 5217, 48, 100);
-    client.start();
+    try {
+      List<RequestInfo> list = parseArgs(args);
+      for (int i = 0; i != list.size(); i++) {
+        RequestInfo now = list.get(i);
+        Client client = new Client(now.getHost(), now.getPort(), now.getTimeout(), now.getNumberOfPackets());
+        client.start();
+      }
+    } catch (Exception e) {
+      System.out.println(e);
+    }
+  }
+
+  private static List<RequestInfo> parseArgs(String[] args) throws Exception {
+    List<RequestInfo> list = new ArrayList<RequestInfo>();
+    int t = 1000, n = 0;
+    for (int i = 0; i < args.length; i++) {
+      if (args[i].equals("-t")) {
+        i++;
+        t = Integer.parseInt(args[i]);
+      }
+      else if (args[i].equals("-n")) {
+        i++;
+        n = Integer.parseInt(args[i]);
+      }
+      else {
+        String[] address = args[i].split(":");
+        if (address.length != 2)
+          throw new Exception("Unvalid host");
+        list.add(new RequestInfo(address[0], Integer.parseInt(address[1]), t, n));
+      }
+    }
+
+    return list;
   }
 }

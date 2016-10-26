@@ -65,8 +65,18 @@ public class Server {
   }
 
   public static void main(String[] args) {
-    int port = 5217;
-    Server server = new Server(port);
-    server.start();
+    try {
+      int port = getPort(args);
+      Server server = new Server(port);
+      server.start();
+    } catch (Exception e) {
+      System.out.println(e);
+    }
+  }
+
+  private static int getPort(String[] args) throws Exception {
+    if (args.length != 1)
+      throw new Exception("Wrong Argument");
+    return Integer.parseInt(args[0]);
   }
 }
