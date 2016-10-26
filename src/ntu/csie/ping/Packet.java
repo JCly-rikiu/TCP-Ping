@@ -10,7 +10,7 @@ public class Packet implements Serializable {
     this.sendTime = sendTime;
   }
 
-  public void show() {
-    System.out.println(sendTime);
+  public long getRTT(long receiveTime) {
+    return receiveTime - sendTime;
   }
 }
