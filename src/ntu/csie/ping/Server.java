@@ -10,7 +10,6 @@ public class Server {
   public Server(int port) {
     try {
       serverSocket = new ServerSocket(port);
-      serverSocket.setSoTimeout(10000);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -49,7 +48,7 @@ public class Server {
         Object obj = in.readObject();
         if (obj instanceof Packet) {
           Packet packet = (Packet)obj;
-          System.out.println("recv from " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
+          System.out.println("recv from " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort() + ", seq = " + packet.getSeq());
 
           out.writeObject(packet);
           out.flush();
@@ -61,6 +60,7 @@ public class Server {
       } catch (ClassNotFoundException e) {
         e.printStackTrace();
       }
+      System.out.flush();
     }
   }
 
