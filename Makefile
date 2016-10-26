@@ -52,9 +52,3 @@ $(BIN)%.class: $(SRC)%.java
 
 clean:
 	rm -rf $(BIN)*
-
-server:
-	java -cp "./:$(BIN):$(LIB)" ntu/csie/ping/Server
-
-client:
-	java -cp "./:$(BIN):$(LIB)" ntu/csie/ping/Client
