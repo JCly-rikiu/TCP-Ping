@@ -4,14 +4,12 @@ public class RequestInfo {
 
   private String host;
   private int port;
-  private int timeout;
-  private int numberOfPackets;
+  private static int timeout = 1000;
+  private static int numberOfPackets = 0;
 
-  public RequestInfo(String host, int port, int timeout, int numberOfPackets) {
+  public RequestInfo(String host, int port) {
     this.host = host;
     this.port = port;
-    this.timeout = timeout;
-    this.numberOfPackets = numberOfPackets;
   }
 
   public String getHost() {
@@ -22,11 +20,19 @@ public class RequestInfo {
     return port;
   }
 
-  public int getTimeout() {
+  public static void setTimeout(int t) {
+    timeout = t;
+  }
+
+  public static int getTimeout() {
     return timeout;
   }
 
-  public int getNumberOfPackets() {
+  public static void setNumberOfPackets(int n) {
+    numberOfPackets = n;
+  }
+
+  public static int getNumberOfPackets() {
     return numberOfPackets;
   }
 }

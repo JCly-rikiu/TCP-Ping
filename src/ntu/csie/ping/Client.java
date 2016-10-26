@@ -91,7 +91,7 @@ public class Client {
       List<RequestInfo> list = parseArgs(args);
       for (int i = 0; i != list.size(); i++) {
         RequestInfo now = list.get(i);
-        Client client = new Client(now.getHost(), now.getPort(), now.getTimeout(), now.getNumberOfPackets());
+        Client client = new Client(now.getHost(), now.getPort(), RequestInfo.getTimeout(), RequestInfo.getNumberOfPackets());
         client.start();
       }
     } catch (Exception e) {
@@ -101,21 +101,22 @@ public class Client {
 
   private static List<RequestInfo> parseArgs(String[] args) throws Exception {
     List<RequestInfo> list = new ArrayList<RequestInfo>();
-    int t = 1000, n = 0;
     for (int i = 0; i < args.length; i++) {
       if (args[i].equals("-t")) {
         i++;
-        t = Integer.parseInt(args[i]);
+        int t = Integer.parseInt(args[i]);
+        RequestInfo.setTimeout(t);
       }
       else if (args[i].equals("-n")) {
         i++;
-        n = Integer.parseInt(args[i]);
+        int n = Integer.parseInt(args[i]);
+        RequestInfo.setNumberOfPackets(n);
       }
       else {
         String[] address = args[i].split(":");
         if (address.length != 2)
           throw new Exception("Unvalid host");
-        list.add(new RequestInfo(address[0], Integer.parseInt(address[1]), t, n));
+        list.add(new RequestInfo(address[0], Integer.parseInt(address[1])));
       }
     }
 
