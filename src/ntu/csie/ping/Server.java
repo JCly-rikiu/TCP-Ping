@@ -10,6 +10,7 @@ public class Server {
   public Server(int port) {
     try {
       serverSocket = new ServerSocket(port);
+      serverSocket.setSoTimeout(10000);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -31,7 +32,6 @@ public class Server {
     private Socket socket;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private String remoteAddress;
 
     public Request(Socket socket) {
       this.socket = socket;
@@ -41,8 +41,6 @@ public class Server {
       } catch (IOException e) {
         e.printStackTrace();
       }
-      String temp = socket.getRemoteSocketAddress().toString();
-      remoteAddress = temp.substring(1, temp.length());
     }
 
     @Override
@@ -51,7 +49,7 @@ public class Server {
         Object obj = in.readObject();
         if (obj instanceof Packet) {
           Packet packet = (Packet)obj;
-          System.out.println("recv from " + remoteAddress);
+          System.out.println("recv from " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
 
           out.writeObject(packet);
           out.flush();
