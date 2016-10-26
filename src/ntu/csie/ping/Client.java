@@ -28,7 +28,7 @@ public class Client {
           InetAddress address = InetAddress.getByName(host);
           ip = address.getHostAddress();
         } catch (UnknownHostException e) {
-          ip = "Unknown Host " + host;
+          ip = "unknown Host(" + host + ")";
         }
         for (int i = 0; i != numberOfPackets || numberOfPackets == 0; i++) {
           ExecutorService executor = Executors.newSingleThreadExecutor();
