@@ -1,0 +1,3 @@
+#!/bin/bash
+
+java -cp "./bin" ntu/csie/ping/Client "${@:1}"
