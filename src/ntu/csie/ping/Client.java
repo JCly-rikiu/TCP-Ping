@@ -19,6 +19,11 @@ public class Client {
     this.numberOfPackets = numberOfPackets;
   }
 
+  /*
+   * Thread to prevent blocking the main thread.
+   * Resolve URL to the ip address.
+   * Use ExecutorService and Future to timeout the connection.
+   */
   public void start() {
     new Thread(new Runnable() {
       @Override
@@ -62,6 +67,13 @@ public class Client {
       this.seq = seq;
     }
 
+    /*
+     * Build socket connection with server.
+     * Send packet with the sequence number and the sendtime.
+     * Receive packet and check the sequence number.
+     * If the sequence number is right, show recv message.
+     * Else, throw an exception.
+     */
     @Override
     public String call() throws Exception {
       socket = new Socket(host, port);

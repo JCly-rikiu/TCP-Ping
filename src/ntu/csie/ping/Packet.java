@@ -2,6 +2,9 @@ package ntu.csie.ping;
 
 import java.io.Serializable;
 
+/*
+ * Object to be transfered as packet, contain sequence number and sendtime.
+ */
 public class Packet implements Serializable {
 
   private long sendTime;

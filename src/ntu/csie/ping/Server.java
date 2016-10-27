@@ -7,6 +7,9 @@ public class Server {
 
   private ServerSocket serverSocket;
 
+  /*
+   * Listen on the specific port, throw exception when fail.
+   */
   public Server(int port) {
     try {
       serverSocket = new ServerSocket(port);
@@ -15,6 +18,10 @@ public class Server {
     }
   }
 
+  /*
+   * Start a loop to accept socket connection from client.
+   * Create new thread for every socket connection.
+   */
   public void start() {
     while (true) {
       try {
@@ -26,6 +33,9 @@ public class Server {
     }
   }
 
+  /*
+   * Thread to run socket connection from client.
+   */
   private class Request extends Thread {
 
     private Socket socket;
@@ -42,6 +52,11 @@ public class Server {
       }
     }
 
+    /*
+     * Read the object from client, check the format.
+     * If the format is right, show recv message and send the object back.
+     * Else, ignore it.
+     */
     @Override
     public void run() {
       try {
