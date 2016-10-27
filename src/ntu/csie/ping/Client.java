@@ -76,7 +76,11 @@ public class Client {
      */
     @Override
     public String call() throws Exception {
-      socket = new Socket(host, port);
+      try {
+        socket = new Socket(host, port);
+      } catch (IOException e) {
+        Thread.sleep(10000000);
+      }
       out = new ObjectOutputStream(socket.getOutputStream());
       in = new ObjectInputStream(socket.getInputStream());
 
@@ -111,7 +115,7 @@ public class Client {
         client.start();
       }
     } catch (Exception e) {
-      System.out.println(e);
+      System.out.println("Unvalid arguments");
     }
   }
 
@@ -131,7 +135,7 @@ public class Client {
       else {
         String[] address = args[i].split(":");
         if (address.length != 2)
-          throw new Exception("Unvalid host");
+          throw new Exception();
         list.add(new RequestInfo(address[0], Integer.parseInt(address[1])));
       }
     }
