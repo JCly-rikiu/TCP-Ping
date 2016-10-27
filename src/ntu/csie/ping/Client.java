@@ -75,9 +75,13 @@ public class Client {
       StringBuilder returnMessage = new StringBuilder("recv from ");
       if (obj instanceof Packet) {
         Packet packet = (Packet)obj;
-        returnMessage.append(socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
-        returnMessage.append(", seq = " + seq);
-        returnMessage.append(", RTT = " + packet.getRTT(System.currentTimeMillis()) + " msec");
+        if (seq == packet.getSeq()) {
+          returnMessage.append(socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
+          returnMessage.append(", seq = " + seq);
+          returnMessage.append(", RTT = " + packet.getRTT(System.currentTimeMillis()) + " msec");
+        } else {
+          throw new Exception();
+        }
       }
 
       socket.close();
